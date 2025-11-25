@@ -59,15 +59,15 @@
 
 - TVM
 
-![](/home/hlt/Documents/MCSsys/reports/imgs/tvm_new.png)
+![](imgs/tvm_new.png)
 
 - openXLA
-![](/home/hlt/Documents/MCSsys/reports/imgs/openXLA.png)
+![](imgs/openXLA.png)
 
 - pp 
 
-![](/home/hlt/Documents/MCSsys/reports/imgs/paddle_install.png)
+![](imgs/paddle_install.png)
 
 - pytorch
 
-![](/home/hlt/Documents/MCSsys/reports/imgs/ptinstall.png)
+![](imgs/ptinstall.png)
