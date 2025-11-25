@@ -1,0 +1,238 @@
+\documentclass[aspectratio=169]{ctexbeamer}
+
+% 主题（可改：Madrid, Berkeley, AnnArbor, Berlin 等）
+\usetheme{Madrid}
+\usecolortheme{default}
+
+% 字体设置（ctex 自动处理中文）
+\setCJKmainfont{SimSun} % 宋体
+\setCJKsansfont{SimHei} % 黑体
+\setCJKmonofont{FangSong} % 仿宋
+
+% 页眉页脚简洁一点
+\setbeamertemplate{footline}[frame number]
+\setbeamertemplate{navigation symbols}{}
+
+\title{编译方向的探索}
+\subtitle{传统编译器 \& 深度学习编译器}
+\author{胡临天}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+% 目录
+\begin{frame}{目录}
+    \tableofcontents
+\end{frame}
+
+%============================
+\section{编译的本质与核心任务}
+%============================
+
+% --- Section 封面页 ---
+\begin{frame}[plain]
+  \centering
+  \vfill
+  \Huge\bfseries 编译的本质与核心任务
+  \vfill
+\end{frame}
+
+\begin{frame}{编译的本质}
+编译的本质是对计算任务的重新认识，
+将程序中蕴含的计算过程转换为一种更适合分析、优化和执行的表达形式。
+
+\bigskip
+\pause
+核心任务包括：
+\begin{itemize}
+\pause
+    \item 对计算的重新解释
+\pause
+    \item 对计算的形式化建模
+\pause
+    \item 构建从“源代码”到“执行计划”的映射
+\end{itemize}
+\end{frame}
+
+%============================
+\section{传统编译器与深度学习编译器}
+%============================
+
+% --- Section 封面页 ---
+\begin{frame}[plain]
+  \centering
+  \vfill
+  \Huge\bfseries 传统编译器与深度学习编译器
+  \vfill
+\end{frame}
+
+
+\begin{frame}{传统编译器架构}
+
+    \begin{columns}
+        \begin{column}{.5\linewidth}
+            传统编译器采用三段式架构：
+            \begin{itemize}
+                \item 前端（Front-End）
+                \item 中端（IR 优化）
+                \item 后端（CodeGen）
+            \end{itemize}
+        \end{column}
+
+        \begin{column}{.5\linewidth}
+            LLVM IR 的意义：
+            \begin{itemize}
+                \item 跨语言的统一抽象层
+                \item 支持多 CPU 架构目标
+                \item 降低编译器开发复杂度
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.7\textwidth]{./asserts/llvm_process.png}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{深度学习编译器的出现}
+    \begin{columns}
+        \begin{column}{.5\linewidth}
+            深度学习模型快速增长，硬件异构化严重：
+
+            \begin{itemize}
+                \item 多框架（PyTorch / TF / ONNX / PaddlePaddle）
+                \item 多硬件（CPU/GPU/NPU/TPU/FPGA）
+                \item 手写算子库不可持续（cuDNN/MKL）
+            \end{itemize}
+
+            因此需要新的编译体系：
+            \begin{itemize}
+                \item 多层中间表示：Graph IR / Tensor IR
+                \item 图优化、算子融合、布局变换
+                \item 自动调优系统
+            \end{itemize}
+        \end{column}
+        \begin{column}{.5\linewidth}
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=.8\textwidth]{./asserts/ptinstall.png}
+            \end{figure}
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=.8\textwidth]{./asserts/paddle_install.png}
+            \end{figure}
+        \end{column}
+    \end{columns}
+
+
+\end{frame}
+
+\begin{frame}{深度学习编译器}
+
+    \begin{columns}
+        \begin{column}{.5\linewidth}
+            \begin{figure}[H]
+                \centering
+                \only<1>{\includegraphics[width=1\textwidth]{./asserts/tvm_new.png}}
+                \only<2>{\includegraphics[width=.7\textwidth]{./asserts/openXLA.png}}
+                \only<3>{\includegraphics[width=0.8\textwidth]{./asserts/mlir.png}}
+            \end{figure}
+        \end{column}
+
+        \begin{column}{.5\linewidth}
+            将用不同深度学习框架写的模型自动转换为不同硬件上的高性能执行代码。
+            \begin{itemize}
+                \item TVM：最早出现的一批深度学习编译器之一
+                    \pause
+                \item XAL：Google为TPU做的深度学习编译器，openXAL为其开源版
+                    \pause
+                \item MLIR：多层 IR 表达体系
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+\end{frame}
+
+%============================
+\section{现存技术瓶颈}
+%============================
+
+% --- Section 封面页 ---
+\begin{frame}[plain]
+  \centering
+  \vfill
+  \Huge\bfseries 现存技术瓶颈
+  \vfill
+\end{frame}
+
+\begin{frame}{传统编译器瓶颈}
+\begin{itemize}
+    \item 异构硬件缺乏统一抽象
+    \pause
+    \item 硬件复杂度指数级提升，启发式规则越来越难写
+    \pause
+    \item LLVM IR 难表达张量计算与层级内存结构
+\end{itemize}
+\end{frame}
+
+\begin{frame}{深度学习编译器瓶颈}
+\begin{itemize}
+    \item 生态碎片化：各厂商维护私有的编译器
+    \pause
+    \item 调度空间巨大，自动调优成本高
+    \pause
+    \item 自动生成 kernel 仍难匹配加速器供应商提供的手写库性能
+\end{itemize}
+\end{frame}
+
+%============================
+\section{编译技术的未来发展方向}
+%============================
+
+% --- Section 封面页 ---
+\begin{frame}[plain]
+  \centering
+  \vfill
+  \Huge\bfseries 编译技术的未来发展方向
+  \vfill
+\end{frame}
+
+\begin{frame}{未来方向：统一抽象}
+\begin{itemize}
+    \item 构建具备动态 Shape 与稀疏语义的 IR
+    \item MLIR/Relax/TensorIR 的融合
+    \item 跨硬件平台的统一语义层
+\end{itemize}
+\end{frame}
+
+\begin{frame}{未来方向：自动化优化}
+\begin{itemize}
+    \item 大模型驱动的调优
+    \item 端到端可学习的编译器
+\end{itemize}
+\end{frame}
+
+\begin{frame}{未来方向：软硬件协同}
+\begin{itemize}
+    \item 编译器介入硬件设计
+    \item 自动为 NPU/GPU/TPU 生成算子的最优实现
+    \item 构建统一的可移植的运行时
+\end{itemize}
+
+% 前进的道路不是渐进式的改进，而是彻底改变游戏规则。
+\end{frame}
+
+
+% 结束
+\begin{frame}
+    \centering
+    \Large Questions
+\end{frame}
+
+\end{document}
