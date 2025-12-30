@@ -1,3 +1,5 @@
+- [latex edition](expolor_compiler.pdf)
+- [slide](expolor_compiler_slide.pdf)
 # 编译方向的探索
 
 - 何为编译？ 编译的本质？

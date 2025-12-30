@@ -1,0 +1,169 @@
+\section{Laser-to-Haptic Mapping Model}
+
+\subsection{Laser Scan Representation}
+
+The 2D laser scanner outputs a sequence of $N=1440$ measurement points per revolution.  
+Each measurement is represented as
+\begin{equation}
+\mathbf{p}_i = \bigl( \theta_i^{\mathrm{raw}},\, d_i^{\mathrm{raw}} \bigr), 
+\quad i = 1,\dots,1440 ,
+\end{equation}
+where $\theta_i^{\mathrm{raw}}$ and $d_i^{\mathrm{raw}}$ denote the raw angle and distance values, respectively.
+
+The corresponding physical quantities are defined as
+\begin{equation}
+\theta_i = \frac{\theta_i^{\mathrm{raw}}}{100} \;\; (\mathrm{deg}), 
+\qquad
+d_i = \frac{d_i^{\mathrm{raw}}}{100} \;\; (\mathrm{m}).
+\end{equation}
+
+By sensor convention, $\theta_i = 0^\circ$ corresponds to the backward direction of the user.
+
+---
+
+\subsection{Angular Coordinate Normalization}
+
+For intuitive spatial perception, the angular reference is shifted such that the forward direction corresponds to $0^\circ$:
+\begin{equation}
+\theta_i' = \operatorname{mod}\!\left( \theta_i - 180^\circ,\, 360^\circ \right),
+\label{eq:angle_shift}
+\end{equation}
+where $\operatorname{mod}(\cdot,360^\circ)$ maps the angle into the interval $[0,360^\circ)$.
+
+---
+
+\subsection{Field-of-View Selection}
+
+Only the forward $270^\circ$ field of view is considered for haptic feedback:
+\begin{equation}
+\theta_i' \in [-135^\circ,\,135^\circ],
+\end{equation}
+while measurements outside this interval are discarded.
+
+---
+
+\subsection{Angular Sectorization}
+
+The effective angular range is uniformly divided into $M=8$ sectors, corresponding to eight linear vibration actuators.  
+Each sector covers an angular width of
+\begin{equation}
+\Delta\theta = \frac{360^\circ}{M} = 45^\circ .
+\end{equation}
+
+The sector index associated with measurement $i$ is computed as
+\begin{equation}
+k(i) = \left\lfloor \frac{\theta_i' + 180^\circ}{\Delta\theta} \right\rfloor,
+\quad k \in \{0,1,\dots,7\}.
+\label{eq:sector_index}
+\end{equation}
+
+---
+
+\subsection{Risk Distance Extraction}
+
+For each sector $k$, a set of valid distance measurements is defined as
+\begin{equation}
+\mathcal{D}_k =
+\left\{
+d_i \;\middle|\;
+k(i)=k,\;
+0 < d_i \le d_{\max}
+\right\},
+\end{equation}
+where $d_{\max}$ denotes the maximum reliable sensing range.
+
+The representative distance of sector $k$ is chosen as the minimum distance,
+\begin{equation}
+d_k =
+\begin{cases}
+\min \mathcal{D}_k, & \mathcal{D}_k \neq \varnothing, \\
+d_0, & \mathcal{D}_k = \varnothing,
+\end{cases}
+\label{eq:min_distance}
+\end{equation}
+which reflects the most conservative (highest-risk) obstacle estimate.
+
+---
+
+\subsection{Distance-to-Intensity Mapping}
+
+Let $d_0$ denote the distance at which vibration starts, and $d_1$ the distance corresponding to maximum vibration intensity ($d_1 < d_0$).  
+A normalized risk intensity is computed as
+\begin{equation}
+x_k =
+\operatorname{clip}
+\left(
+\frac{d_0 - d_k}{d_0 - d_1},\;
+0,\;
+1
+\right),
+\label{eq:normalized_risk}
+\end{equation}
+where $\operatorname{clip}(x,0,1)$ limits the value to the interval $[0,1]$.
+
+To enhance sensitivity to near-field obstacles, a nonlinear shaping function is applied:
+\begin{equation}
+a_k = x_k^{\gamma},
+\qquad \gamma > 1 .
+\label{eq:nonlinear_mapping}
+\end{equation}
+
+---
+
+\subsection{Temporal Smoothing}
+
+To suppress rapid fluctuations, an exponential moving average (EMA) filter is employed:
+\begin{equation}
+A_k(t) = (1-\alpha)\,A_k(t-1) + \alpha\,a_k(t),
+\qquad 0<\alpha<1 .
+\label{eq:ema}
+\end{equation}
+
+A dead-zone threshold $A_{\min}$ is further applied to eliminate low-amplitude vibrations:
+\begin{equation}
+\tilde{A}_k =
+\begin{cases}
+0, & A_k < A_{\min}, \\
+A_k, & A_k \ge A_{\min}.
+\end{cases}
+\label{eq:deadzone}
+\end{equation}
+
+---
+
+\subsection{PWM Output Mapping}
+
+Finally, the filtered intensity is mapped to a pulse-width modulation (PWM) duty cycle.  
+Assuming a timer resolution of $\mathrm{PWM}_{\max}=999$, the output for sector $k$ is given by
+\begin{equation}
+\mathrm{PWM}_k =
+\left\lfloor
+\tilde{A}_k \cdot \mathrm{PWM}_{\max}
++ \tfrac{1}{2}
+\right\rfloor,
+\quad k=0,\dots,7 .
+\label{eq:pwm_output}
+\end{equation}
+
+---
+
+\subsection{Overall Mapping Summary}
+
+Combining the above steps, the laser-to-haptic mapping for the $k$-th actuator can be summarized as
+\begin{equation}
+\mathrm{PWM}_k
+=
+\left\lfloor
+\operatorname{EMA}
+\left(
+\left[
+\operatorname{clip}
+\left(
+\frac{d_0 - \min \mathcal{D}_k}{d_0 - d_1},
+0,1
+\right)
+\right]^{\gamma}
+\right)
+\cdot 999
+\right\rceil .
+\end{equation}

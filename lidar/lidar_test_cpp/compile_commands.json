@@ -1,0 +1,26 @@
+[
+{
+  "directory": "/home/hlt/Documents/MCSsys/lidar/lidar_test_cpp/build",
+  "command": "/usr/bin/c++ -DBOOST_ATOMIC_DYN_LINK -DBOOST_ATOMIC_NO_LIB -DBOOST_CHRONO_DYN_LINK -DBOOST_CHRONO_NO_LIB -DBOOST_SYSTEM_DYN_LINK -DBOOST_SYSTEM_NO_LIB -DBOOST_THREAD_DYN_LINK -DBOOST_THREAD_NO_LIB -I/home/hlt/Documents/MCSsys/lidar/lidar_test_cpp/inc -std=gnu++17 -o CMakeFiles/lidar_udp_dump.dir/src/main.cpp.o -c /home/hlt/Documents/MCSsys/lidar/lidar_test_cpp/src/main.cpp",
+  "file": "/home/hlt/Documents/MCSsys/lidar/lidar_test_cpp/src/main.cpp",
+  "output": "CMakeFiles/lidar_udp_dump.dir/src/main.cpp.o"
+},
+{
+  "directory": "/home/hlt/Documents/MCSsys/lidar/lidar_test_cpp/build",
+  "command": "/usr/bin/c++ -DBOOST_ATOMIC_DYN_LINK -DBOOST_ATOMIC_NO_LIB -DBOOST_CHRONO_DYN_LINK -DBOOST_CHRONO_NO_LIB -DBOOST_SYSTEM_DYN_LINK -DBOOST_SYSTEM_NO_LIB -DBOOST_THREAD_DYN_LINK -DBOOST_THREAD_NO_LIB -I/home/hlt/Documents/MCSsys/lidar/lidar_test_cpp/inc -std=gnu++17 -o CMakeFiles/lidar_udp_dump.dir/src/sdk/LakiBeamHTTP.cpp.o -c /home/hlt/Documents/MCSsys/lidar/lidar_test_cpp/src/sdk/LakiBeamHTTP.cpp",
+  "file": "/home/hlt/Documents/MCSsys/lidar/lidar_test_cpp/src/sdk/LakiBeamHTTP.cpp",
+  "output": "CMakeFiles/lidar_udp_dump.dir/src/sdk/LakiBeamHTTP.cpp.o"
+},
+{
+  "directory": "/home/hlt/Documents/MCSsys/lidar/lidar_test_cpp/build",
+  "command": "/usr/bin/c++ -DBOOST_ATOMIC_DYN_LINK -DBOOST_ATOMIC_NO_LIB -DBOOST_CHRONO_DYN_LINK -DBOOST_CHRONO_NO_LIB -DBOOST_SYSTEM_DYN_LINK -DBOOST_SYSTEM_NO_LIB -DBOOST_THREAD_DYN_LINK -DBOOST_THREAD_NO_LIB -I/home/hlt/Documents/MCSsys/lidar/lidar_test_cpp/inc -std=gnu++17 -o CMakeFiles/lidar_udp_dump.dir/src/sdk/LakiBeamUDP.cpp.o -c /home/hlt/Documents/MCSsys/lidar/lidar_test_cpp/src/sdk/LakiBeamUDP.cpp",
+  "file": "/home/hlt/Documents/MCSsys/lidar/lidar_test_cpp/src/sdk/LakiBeamUDP.cpp",
+  "output": "CMakeFiles/lidar_udp_dump.dir/src/sdk/LakiBeamUDP.cpp.o"
+},
+{
+  "directory": "/home/hlt/Documents/MCSsys/lidar/lidar_test_cpp/build",
+  "command": "/usr/bin/c++ -DBOOST_ATOMIC_DYN_LINK -DBOOST_ATOMIC_NO_LIB -DBOOST_CHRONO_DYN_LINK -DBOOST_CHRONO_NO_LIB -DBOOST_SYSTEM_DYN_LINK -DBOOST_SYSTEM_NO_LIB -DBOOST_THREAD_DYN_LINK -DBOOST_THREAD_NO_LIB -I/home/hlt/Documents/MCSsys/lidar/lidar_test_cpp/inc -std=gnu++17 -o CMakeFiles/lidar_udp_dump.dir/src/test/opengl_test.cpp.o -c /home/hlt/Documents/MCSsys/lidar/lidar_test_cpp/src/test/opengl_test.cpp",
+  "file": "/home/hlt/Documents/MCSsys/lidar/lidar_test_cpp/src/test/opengl_test.cpp",
+  "output": "CMakeFiles/lidar_udp_dump.dir/src/test/opengl_test.cpp.o"
+}
+]

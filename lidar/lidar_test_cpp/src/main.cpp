@@ -1,18 +1,21 @@
 #include "sdk/LakiBeamUDP.h"
+#include "utils/Encode_binary.h"
+#include "ws/ws_server.h"
+
 #include <GL/freeglut_std.h>
 #include <GL/gl.h>
-#include <algorithm>
 #include <boost/asio.hpp>
-#include <iostream>
+#include <boost/asio/io_context.hpp>
+#include <memory>
 #include <mutex>
 // #include <test/opengl_test.h>
+#include "test/lidar_test.h"
 #include <thread>
-#include <vector>
 
 #include <cmath>
 #include <GL/freeglut.h>
+#include <vector>
 
-using boost::asio::ip::udp;
 
 // shared data
 std::mutex lidar_mutex;
@@ -40,6 +43,38 @@ void receiver_thread() {
 }
 
 //--------------------------------
+// thread that push lidar data to frontend through http
+//--------------------------------
+
+void push_to_frontend(const repark_t& data, wslib::WsServer& server) {
+    // header: 4(timestamp) + 2(count)
+    //
+    //  |  time  |
+    //  |  size  |
+    //  | angles |
+    //  |  ...   |
+    //  |  dots  |
+    //  |  ...   |
+    // TODO: Given that data format, How to serve this data to the frontend?
+    auto buf = std::make_shared<std::vector<uint8_t>>(encode_binary(data));
+    server.broadcast(buf);
+}
+
+void push_thread(wslib::WsServer& server) {
+    using namespace std::chrono_literals;
+
+    while (g_running.load()) {
+        repark_t snapshot;
+        {
+            std::lock_guard<std::mutex> lock(lidar_mutex);
+            snapshot = pack;
+        }
+        push_to_frontend(snapshot, server);
+        std::this_thread::sleep_for(50ms);
+    }
+}
+
+//--------------------------------
 // opengl draw
 //--------------------------------
 
@@ -63,7 +98,7 @@ std::pair<double, double> ploar2coor(u16_t angle, u16_t dist) {
     double ag = ((double)(angle) / (double)100 ) * M_PI / 180.0f;
     double r = (double)dist / (double)100;
 
-    auto res = std::pair<double, double>(r * cosf(ag) / 60.0f, r * sinf(ag)/ 60.0f);
+    auto res = std::pair<double, double>(r * cosf(ag) / 30.0f, r * sinf(ag)/ 30.0f);
     return res;
 }
 
@@ -85,7 +120,7 @@ void display_dots() {
 
     for(int i = 0; i < pack.maxdots; i++) { 
         auto [x, y] = ploar2coor(pack.dotcloud[i].angle, pack.dotcloud[i].distance); 
-        glVertex2d(-y,-x);
+        glVertex2d(y,-x);
     }
 
     glEnd();
@@ -94,17 +129,41 @@ void display_dots() {
     glutPostRedisplay();
 }
 
-int main(int argc, char* argv[]) {
-    init_lidar_conn();
-
-    std::thread udp_thread(receiver_thread);
-
+void opengl_draw(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
     glutInitWindowSize(400, 300);
     glutCreateWindow("OpenGL Test");
     glutDisplayFunc(display_dots);
     glutMainLoop();
+}
 
+int main(int argc, char* argv[]) {
+    // lidar_test(argc, argv);
+    init_lidar_conn();
+    std::thread udp_thread(receiver_thread);
+
+    boost::asio::io_context ioc;
+
+    wslib::WsServer server(ioc, 9002);
+    server.run();
+
+    std::thread net([&] { ioc.run(); } );
+
+    // push thread 
+    std::thread push( [&] { push_thread(server); });
+
+    // use open draw dot cloud
+    // opengl_draw(argc, argv);
+    // glutInit(&argc, argv);
+    // glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
+    // glutInitWindowSize(400, 300);
+    // glutCreateWindow("OpenGL Test");
+    // glutDisplayFunc(display_dots);
+    // glutMainLoop();
+
+    udp_thread.join();
+    net.join();
+    push.join();
     return 0;
 }

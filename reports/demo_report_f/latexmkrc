@@ -1,0 +1,13 @@
+# use xelatex
+$pdf_mode = 5;
+$xelatex = 'xelatex -interaction=nonstopmode -synctex=1 -out-directory=build %O %S';
+
+# $pdf_mode = 1;  # use pdflatex
+# $pdflatex = 'pdflatex -interaction=nonstopmode -synctex=1 -out-directory=build %O %S';
+
+$out_dir = 'build';
+$aux_dir = 'build';
+
+$interaction = 'nonstopmode';
+
+$clean_ext = "acn acr alg bbl bcf blg glg glo gls ist run.xml synctex.gz";

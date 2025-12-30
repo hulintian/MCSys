@@ -2,3 +2,5 @@ sws
 tmp
 **/build
 refs
+.vscode
+.cache
