@@ -1,0 +1,36 @@
+digraph WS_Frame {
+    rankdir=TB;
+    node [shape=box, width=2.8, height=0.4, fontname="Monospace"];
+    edge [style=invis];
+
+    B0  [label="Byte 0  | timestamp[0]"];
+    B1  [label="Byte 1  | timestamp[1]"];
+    B2  [label="Byte 2  | timestamp[2]"];
+    B3  [label="Byte 3  | timestamp[3]"];
+
+    B4  [label="Byte 4  | count n (LSB)"];
+    B5  [label="Byte 5  | count n (MSB)"];
+
+    B6  [label="Byte 6  | angle[0] (LSB)"];
+    B7  [label="Byte 7  | angle[0] (MSB)"];
+    B8  [label="Byte 8  | distance[0] (LSB)"];
+    B9  [label="Byte 9  | distance[0] (MSB)"];
+
+    B10 [label="Byte 10 | angle[1] (LSB)"];
+    B11 [label="Byte 11 | angle[1] (MSB)"];
+    B12 [label="Byte 12 | distance[1] (LSB)"];
+    B13 [label="Byte 13 | distance[1] (MSB)"];
+
+    BX  [label="..."];
+
+    BN1 [label="Byte k-3 | angle[n-1] (LSB)"];
+    BN2 [label="Byte k-2 | angle[n-1] (MSB)"];
+    BN3 [label="Byte k-1 | distance[n-1] (LSB)"];
+    BN4 [label="Byte k   | distance[n-1] (MSB)"];
+
+    B0  -> B1  -> B2  -> B3  -> B4  -> B5
+        -> B6  -> B7  -> B8  -> B9
+        -> B10 -> B11 -> B12 -> B13
+        -> BX
+        -> BN1 -> BN2 -> BN3 -> BN4;
+}
